@@ -4,5 +4,5 @@
 
 ### TODO
 
-Weather from Finnish Meteorological Institute
-Output text to an external OLED display
+Weather from Finnish Meteorological Institute using their API.
+Output text to an external OLED display using I2C.
