@@ -58,9 +58,8 @@ def parse_temperature():
 	if temperature != -1:
 		temperature_numbers = lines[1].strip()[temperature+2:]
 		celsius = float(temperature_numbers) / 1000.0
+		write_text_to_display(celsius)
 		return celsius
-
-        write_text_to_display(celsius)
 
 def write_text_to_display(text):
     draw.text((x, top), text, font=font, fill=255)
