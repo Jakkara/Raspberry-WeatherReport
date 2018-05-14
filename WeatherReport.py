@@ -12,7 +12,7 @@ from PIL import ImageFont
 
 ### DISPLAY CONF ###
 
-RST = None    #ei reset-liitinta
+RST = None    #no reset connection on the display
 disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
 disp.begin()
 disp.clear()
@@ -21,8 +21,9 @@ disp.display()
 width = disp.width      #display properties
 height = disp.height
 
-image = Image.new('1', (width, height))	#prepare to draw
+image = Image.new('1', (width, height))	#1-bit color,  size parameters according to screen according to screen
 draw = ImageDraw.Draw(image)
+
 draw.rectangle((0,0,width,height), outline=0, fill=0) #clear the image
 
 padding = -2	#constants for easier manipulation
@@ -31,7 +32,10 @@ bottom = height-padding
 x = 0
 
 font = ImageFont.load_default()
-draw.text((x, top),       "Test run",  font=font, fill=255)
+draw.text((x, top), "MARMOTA MARMOTA", font=font, fill=255)
+disp.image(image)
+disp.display()
+time.sleep(.1)
 
 ### TEMPERATURE CONF ###
 
@@ -55,6 +59,14 @@ def parse_temperature():
 		temperature_numbers = lines[1].strip()[temperature+2:]
 		celsius = float(temperature_numbers) / 1000.0
 		return celsius
+
+        write_text_to_display(celsius)
+
+def write_text_to_display(text):
+    draw.text((x, top), text, font=font, fill=255)
+    disp.image(image)
+    disp.display()
+    time.sleep(.1)
 
 while True:
 	print(parse_temperature())
