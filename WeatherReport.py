@@ -61,16 +61,15 @@ def parse_temperature():
 	if temperature != -1:
 		temperature_numbers = lines[1].strip()[temperature+2:]
 		celsius = float(temperature_numbers) / 1000.0
-		# celsius_string = str(celsius)
-		# write_text_to_display(celsius_string)
 		return celsius
 
 def write_text_to_display(temperature):
-	index_of_comma = temperature.find('.')
+	index_of_comma = temperature.find('.') #remove unnecessary decimals
 	if index_of_comma != -1:
 		temperature = temperature[0:index_of_comma+2]
-	draw.rectangle((0,0,width,height), outline=0, fill=0)
-	draw.text((x, top), temperature, font=font, fill=255)
+
+	draw.rectangle((0,0,width,height), outline=0, fill=0) # clear the screen with a black rectangle
+	draw.text((x, top), temperature, font=font, fill=255)   # write temp
 	disp.image(image)
 	disp.display()
 	time.sleep(1)
