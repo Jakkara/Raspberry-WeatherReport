@@ -26,16 +26,19 @@ draw = ImageDraw.Draw(image)
 
 draw.rectangle((0,0,width,height), outline=0, fill=0) #clear the image
 
-padding = -2	#constants for easier manipulation
+padding = 3	#constants for easier manipulation
 top = padding
 bottom = height-padding
-x = 0
+x = 25
 
-font = ImageFont.load_default()
-draw.text((x, top), "MARMOTA MARMOTA", font=font, fill=255)
-disp.image(image)
-disp.display()
-time.sleep(.1)
+# font = ImageFont.load_default()
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+font = ImageFont.truetype(font = dir_path + "/VCR.ttf", size = 32)
+#draw.text((x, top), "MARMOTA MARMOTA", font=font, fill=255)
+#disp.image(image)
+#disp.display()
+#time.sleep(.1)
 
 ### TEMPERATURE CONF ###
 
@@ -44,29 +47,34 @@ os.system('modprobe w1-therm')      #library for temp readings
 sensor_output_path = '/sys/bus/w1/devices/28-0417618cabff/w1_slave'
 
 def read_file_data():
-	file_reader = open(sensor_output_path,'r')  #skannaa tiedostoa lukeva olio
-	lines = file_reader.readlines()     #lue tiedosto
-	file_reader.close()     #sulje lukija
+	file_reader = open(sensor_output_path,'r')  # scan the temperature reading file
+	lines = file_reader.readlines()     # read the result
+	file_reader.close()     # close the reader
 	return lines
 
 def parse_temperature():
-	lines = read_file_data()    #kutsutaan metodista tiedot
-	while lines[0].strip()[-3:] != 'YES': # sensorin tiedosto ilmoittaa YES kun mittaus onnistuu
-		time.sleep(0.2)     #jos mittaus ei onnistu, nuku ja yritn
+	lines = read_file_data()    # call the method for parsing
+	while lines[0].strip()[-3:] != 'YES': # the sensor will show a 'YES' on succesful reading
+		time.sleep(2)         # sleep on failure, try again later
 		lines = read_file_data()
-	temperature = lines[1].find('t=') #luetaann
+	temperature = lines[1].find('t=') # read the temp
 	if temperature != -1:
 		temperature_numbers = lines[1].strip()[temperature+2:]
 		celsius = float(temperature_numbers) / 1000.0
-		write_text_to_display(celsius)
+		# celsius_string = str(celsius)
+		# write_text_to_display(celsius_string)
 		return celsius
 
-def write_text_to_display(text):
-    draw.text((x, top), text, font=font, fill=255)
-    disp.image(image)
-    disp.display()
-    time.sleep(.1)
+def write_text_to_display(temperature):
+	index_of_comma = temperature.find('.')
+	if index_of_comma != -1:
+		temperature = temperature[0:index_of_comma+2]
+	draw.rectangle((0,0,width,height), outline=0, fill=0)
+	draw.text((x, top), temperature, font=font, fill=255)
+	disp.image(image)
+	disp.display()
+	time.sleep(1)
 
 while True:
-	print(parse_temperature())
-	time.sleep(1)
+	write_text_to_display(str(parse_temperature()))
+	time.sleep(10)
